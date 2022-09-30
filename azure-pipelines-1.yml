@@ -10,10 +10,12 @@ pool:
 resources:
   repositories:
   - repository: self # The pipeline definition - trigger only on changes to this pipe
+    type: git
     name: yaml
     ref: master
     trigger: none
   - repository: control # The control-repo - should trigger on changes
+    type: git
     name: yam1
     ref: main
     trigger:
@@ -24,6 +26,7 @@ resources:
         include:
         - terraform_test/*
   - repository: deps
+    type: git
     name: yam2
     ref: main
     trigger: none
@@ -46,3 +49,10 @@ stages:
     - checkout: deps
       fetchDepth: 1
       path: deps
+    
+    - task: CmdLine@2
+      inputs:
+        script: |
+          echo Write your commands here
+          
+          echo Hello world
