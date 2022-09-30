@@ -1,0 +1,48 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  repositories:
+  - repository: self # The pipeline definition - trigger only on changes to this pipe
+    name: yaml
+    ref: master
+    trigger: none
+  - repository: control # The control-repo - should trigger on changes
+    name: yam1
+    ref: main
+    trigger:
+      branches:
+        include:
+        - main
+      paths:
+        include:
+        - terraform_test/*
+  - repository: deps
+    name: yam2
+    ref: main
+    trigger: none
+
+stages:
+- stage: defaultStage
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: defaultJob
+    workspace:
+      clean: all # (outputs, resources, all)m
+    steps:
+    - checkout: control
+      fetchDepth: 1
+      path: control
+    - checkout: self
+      fetchDepth: 1
+      path: self
+    - checkout: deps
+      fetchDepth: 1
+      path: deps
